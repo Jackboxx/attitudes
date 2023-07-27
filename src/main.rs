@@ -13,10 +13,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct CliArgs {
-    /// Name of the emoticon to output (case insensitive)
-    name: Option<String>,
+    /// Tag of the emoticon to output (case insensitive)
+    tag: Option<String>,
 
-    /// If a name is provided as an argument or via stdin and there are multiple icons with that
+    /// If a tag is provided as an argument or via stdin and there are multiple icons with that
     /// name use the first icon found
     #[arg(short, long, default_value_t = true)]
     pick_first: bool,
@@ -36,12 +36,12 @@ impl Default for Config {
         Self {
             extra_emoticons: Some(vec![
                 OwnableEmoticon {
-                    name: "---".to_owned(),
                     icon: "---".to_owned(),
+                    tags: vec!["---".to_owned()],
                 },
                 OwnableEmoticon {
-                    name: "---".to_owned(),
                     icon: "---".to_owned(),
+                    tags: vec!["---".to_owned()],
                 },
             ]),
         }
@@ -61,17 +61,17 @@ fn main() {
         emoticons
     };
 
-    let name = args.name;
+    let tag = args.tag;
 
-    let possible_choices: Vec<_> = match &name {
-        Some(name) => emoticons
+    let possible_choices: Vec<_> = match &tag {
+        Some(tag) => emoticons
             .into_iter()
-            .filter(|emo| emo.name.eq_ignore_ascii_case(name))
+            .filter(|emo| emo.tags.iter().any(|t| t.eq_ignore_ascii_case(tag)))
             .collect(),
         None => emoticons,
     };
 
-    let res = if name.is_some() && args.pick_first {
+    let res = if tag.is_some() && args.pick_first {
         possible_choices
             .get(0)
             .map(|emo| emo.icon.clone())
