@@ -7,7 +7,8 @@ use clipboard::{ClipboardContext, ClipboardProvider};
 use dialoguer::console::Term;
 use dialoguer::{theme::ColorfulTheme, FuzzySelect};
 
-use emoticons::{Emoticon, DEFAULT_EMOTICONS};
+use emoticons::{Emoticon, OwnableEmoticon, DEFAULT_EMOTICONS};
+use serde::{Deserialize, Serialize};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -25,10 +26,41 @@ struct CliArgs {
     copy_to_clipboard: bool,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct Config {
+    extra_emoticons: Option<Vec<OwnableEmoticon>>,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            extra_emoticons: Some(vec![
+                OwnableEmoticon {
+                    name: "---".to_owned(),
+                    icon: "---".to_owned(),
+                },
+                OwnableEmoticon {
+                    name: "---".to_owned(),
+                    icon: "---".to_owned(),
+                },
+            ]),
+        }
+    }
+}
+
 fn main() {
     let args = CliArgs::parse();
+    let cfg: Config = confy::load(clap::crate_name!(), "config")
+        .expect("Config file is malformed or doesn't exist");
 
-    let emoticons = DEFAULT_EMOTICONS.to_vec();
+    let emoticons = {
+        let mut extra = cfg.extra_emoticons.unwrap_or(vec![]);
+        let mut emoticons: Vec<OwnableEmoticon> = DEFAULT_EMOTICONS.map(|emo| emo.into()).to_vec();
+
+        emoticons.append(&mut extra);
+        emoticons
+    };
+
     let name = args.name;
 
     let possible_choices: Vec<_> = match &name {
@@ -42,17 +74,18 @@ fn main() {
     let res = if name.is_some() && args.pick_first {
         possible_choices
             .get(0)
-            .map(|emo| emo.icon)
-            .unwrap_or(Emoticon::FALLBACK_ICON)
+            .map(|emo| emo.icon.clone())
+            .unwrap_or(Emoticon::FALLBACK_ICON.to_owned())
     } else {
         let selection = FuzzySelect::with_theme(&ColorfulTheme::default())
             .items(&possible_choices)
+            .default(0)
             .interact_on_opt(&Term::stderr())
             .unwrap_or(None);
 
         selection
-            .map(|idx| possible_choices[idx].icon)
-            .unwrap_or(Emoticon::FALLBACK_ICON)
+            .map(|idx| possible_choices[idx].icon.clone())
+            .unwrap_or(Emoticon::FALLBACK_ICON.to_owned())
     };
 
     // ¯\_(ツ)_/¯
