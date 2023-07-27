@@ -31,17 +31,18 @@ struct Config {
     extra_emoticons: Option<Vec<OwnableEmoticon>>,
 }
 
+// example config
 impl Default for Config {
     fn default() -> Self {
         Self {
             extra_emoticons: Some(vec![
                 OwnableEmoticon {
-                    icon: "---".to_owned(),
-                    tags: vec!["---".to_owned()],
+                    icon: ":D".to_owned(),
+                    tags: vec!["smile".to_owned()],
                 },
                 OwnableEmoticon {
-                    icon: "---".to_owned(),
-                    tags: vec!["---".to_owned()],
+                    icon: "-_-".to_owned(),
+                    tags: vec!["meh".to_owned(), "uh".to_owned()],
                 },
             ]),
         }
