@@ -75,6 +75,7 @@ fn main() {
     };
 
     // ¯\_(ツ)_/¯
+    #[allow(clippy::blocks_in_if_conditions)]
     if !args.copy_to_clipboard
         || (|| {
             let mut ctx: ClipboardContext = ClipboardProvider::new()?;
