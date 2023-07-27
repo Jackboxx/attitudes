@@ -1,4 +1,4 @@
-# Attitudes
+# Attitudes (◉⁰̈ᴥ⁰̈)ʕ ⁰̈●⁰̈ ʔ
 
 A CLI tool to help you express emotions at the press of a button
 
