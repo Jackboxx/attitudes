@@ -1,5 +1,6 @@
 use std::fmt::Display;
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Emoticon<'a> {
     pub name: &'a str,
     pub icon: &'a str,
