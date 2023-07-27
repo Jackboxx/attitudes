@@ -1,18 +1,20 @@
-#![allow(dead_code)]
-
+mod data;
+mod decode;
 mod emoticons;
 
 use clap::Parser;
 use clipboard::{ClipboardContext, ClipboardProvider};
+use data::BASE64_EMOTICON_DATA;
+use decode::decode_data;
 use dialoguer::console::Term;
 use dialoguer::{theme::ColorfulTheme, FuzzySelect};
 
-use emoticons::{Emoticon, OwnableEmoticon, DEFAULT_EMOTICONS};
+use emoticons::Emoticon;
 use serde::{Deserialize, Serialize};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
-struct CliArgs {
+pub struct CliArgs {
     /// Tag of the emoticon to output (case insensitive)
     tag: Option<String>,
 
@@ -27,25 +29,14 @@ struct CliArgs {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Config {
-    extra_emoticons: Option<Vec<OwnableEmoticon>>,
+pub struct Config {
+    icons: Option<Vec<Emoticon>>,
 }
 
-// example config
 impl Default for Config {
     fn default() -> Self {
-        Self {
-            extra_emoticons: Some(vec![
-                OwnableEmoticon {
-                    icon: ":D".to_owned(),
-                    tags: vec!["smile".to_owned()],
-                },
-                OwnableEmoticon {
-                    icon: "-_-".to_owned(),
-                    tags: vec!["meh".to_owned(), "uh".to_owned()],
-                },
-            ]),
-        }
+        // I mean what other way would you store your data (⚈๑⚈ੌ⋆ॢ)
+        decode_data(BASE64_EMOTICON_DATA)
     }
 }
 
@@ -54,13 +45,7 @@ fn main() {
     let cfg: Config = confy::load(clap::crate_name!(), "config")
         .expect("Config file is malformed or doesn't exist");
 
-    let emoticons = {
-        let mut extra = cfg.extra_emoticons.unwrap_or(vec![]);
-        let mut emoticons: Vec<OwnableEmoticon> = DEFAULT_EMOTICONS.map(|emo| emo.into()).to_vec();
-
-        emoticons.append(&mut extra);
-        emoticons
-    };
+    let emoticons = cfg.icons.unwrap_or(vec![]);
 
     let tag = args.tag;
 
