@@ -15,13 +15,13 @@ pub struct CliArgs {
     /// Tag of the emoticon to output (case insensitive)
     tag: Option<String>,
 
-    /// If a tag is provided as an argument or via stdin and there are multiple icons with that
-    /// name use the first icon found
-    #[arg(short, long, default_value_t = true)]
-    pick_first: bool,
+    /// If a tag is provided as an argument and there are multiple icons with that
+    /// name show a selection instead of using the first icon found
+    #[arg(short, long)]
+    pick_first_disabled: bool,
 
     /// Copy icon to clipboard instead of printing it
-    #[arg(short, long, default_value_t = false)]
+    #[arg(short, long)]
     copy_to_clipboard: bool,
 }
 
@@ -41,7 +41,7 @@ fn main() {
         None => emoticons,
     };
 
-    let res = if tag.is_some() && args.pick_first {
+    let res = if tag.is_some() && !args.pick_first_disabled {
         possible_choices
             .get(0)
             .map(|emo| emo.icon.clone())
