@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fmt::Display};
+use std::fmt::Display;
 
 use serde::{Deserialize, Serialize};
 
@@ -6,27 +6,6 @@ use serde::{Deserialize, Serialize};
 pub struct Emoticon {
     pub tags: Vec<String>,
     pub icon: String,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct EmoticonJson {
-    pub new_tags: Vec<String>,
-    pub original_tags: Vec<String>,
-}
-
-impl Emoticon {
-    pub fn from_json_data(data: HashMap<String, EmoticonJson>) -> Vec<Emoticon> {
-        data.into_iter()
-            .map(|(k, v)| {
-                let mut tags = v.new_tags;
-                let mut org = v.original_tags;
-
-                tags.append(&mut org);
-                let icon = k;
-                Emoticon { icon, tags }
-            })
-            .collect()
-    }
 }
 
 impl Display for Emoticon {

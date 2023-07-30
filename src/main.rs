@@ -1,16 +1,13 @@
-mod data;
 mod decode;
 mod emoticons;
 
 use clap::Parser;
 use clipboard::{ClipboardContext, ClipboardProvider};
-use data::BASE64_EMOTICON_DATA;
 use decode::decode_data;
 use dialoguer::console::Term;
 use dialoguer::{theme::ColorfulTheme, FuzzySelect};
 
 use emoticons::Emoticon;
-use serde::{Deserialize, Serialize};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -28,29 +25,11 @@ pub struct CliArgs {
     copy_to_clipboard: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Config {
-    icons: Option<Vec<Emoticon>>,
-}
-
-impl Default for Config {
-    fn default() -> Self {
-        // I mean what other way would you store your data (⚈๑⚈ੌ⋆ॢ)
-        let emoticons = match decode_data(BASE64_EMOTICON_DATA) {
-            Ok(emoticons) => Some(emoticons),
-            Err(_) => None,
-        };
-
-        Self { icons: emoticons }
-    }
-}
-
 fn main() {
     let args = CliArgs::parse();
-    let cfg: Config = confy::load(clap::crate_name!(), "config")
-        .expect("Config file is malformed or doesn't exist");
 
-    let emoticons = cfg.icons.unwrap_or(vec![]);
+    let bin_data = include_bytes!("binary-data");
+    let emoticons = decode_data(bin_data).unwrap();
 
     let tag = args.tag;
 
