@@ -1,9 +1,7 @@
-mod decode;
 mod emoticons;
 
 use clap::Parser;
 use clipboard::{ClipboardContext, ClipboardProvider};
-use decode::decode_data;
 use dialoguer::console::Term;
 use dialoguer::{theme::ColorfulTheme, FuzzySelect};
 
@@ -38,7 +36,10 @@ fn main() {
     } = CliArgs::parse();
 
     let bin_data = include_bytes!("binary-data");
-    let emoticons = decode_data(bin_data).unwrap();
+    let emoticons: Vec<Emoticon> = bincode::deserialize(bin_data).unwrap_or(vec![Emoticon {
+        tags: vec!["something went wrong".to_owned()],
+        icon: Emoticon::FALLBACK_ICON.to_owned(),
+    }]);
 
     let possible_choices: Vec<_> = match &tag {
         Some(tag) => emoticons
