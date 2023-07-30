@@ -36,7 +36,12 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         // I mean what other way would you store your data (⚈๑⚈ੌ⋆ॢ)
-        decode_data(BASE64_EMOTICON_DATA)
+        let emoticons = match decode_data(BASE64_EMOTICON_DATA) {
+            Ok(emoticons) => Some(emoticons),
+            Err(_) => None,
+        };
+
+        Self { icons: emoticons }
     }
 }
 

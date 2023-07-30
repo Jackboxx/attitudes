@@ -15,6 +15,7 @@ name = "attitudes"
 path = "src/main.rs"
 
 [dependencies]
+anyhow = "1.0.72"
 base64 = "0.21.2"
 clap = { version = "4.3.19", features = ["derive", "cargo"] }
 clipboard = "0.5.0"
