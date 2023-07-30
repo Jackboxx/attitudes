@@ -2,10 +2,6 @@
 
 A CLI tool to help you express emotions at the press of a button
 
-
-Note: this is thing is NOT optimized I mad it in 5 hours because I was bored and wanted to
-have fun
-
 ![](preview.gif)
 
 ## Installation
