@@ -33,7 +33,7 @@ impl Display for Emoticon {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "{icon:20}\t tags: {tags}",
+            "{icon:40}\t tags: {tags}",
             icon = self.icon,
             tags = self.tags.join(", ")
         )
